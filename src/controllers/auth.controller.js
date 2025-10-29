@@ -1,6 +1,7 @@
 
 import AuthService from '../services/auth.service.js';
 
+
 export default class AuthController {
   static async signup(req, res, next) {
     try {
@@ -52,3 +53,5 @@ export default class AuthController {
     }
   }
 }
+
+

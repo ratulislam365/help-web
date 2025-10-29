@@ -1,12 +1,10 @@
 import { Server as SocketIOServer } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import UserService from './services/user.service.js';
 
 const userSocketMap = new Map();
-
 let io;
 
-const authenticateSocket = (socket, next) => {
+export const authenticateSocket = (socket, next) => {
   const token = socket.handshake.headers.token;
   if (token) {
     try {
@@ -22,10 +20,7 @@ const authenticateSocket = (socket, next) => {
 
 export const initSocket = (server) => {
   io = new SocketIOServer(server, {
-    cors: {
-      origin: '*', // Allow all origins for now
-      methods: ['GET', 'POST'],
-    },
+    cors: { origin: '*', methods: ['GET', 'POST'] },
   });
 
   io.use(authenticateSocket);
@@ -33,29 +28,14 @@ export const initSocket = (server) => {
   io.on('connection', (socket) => {
     const userId = socket.userId;
     if (userId) {
-      console.log(`Socket connected: ${socket.id} for user ${userId}`);
+      console.log(`⚡ Socket connected: ${socket.id} for user ${userId}`);
       userSocketMap.set(userId, socket.id);
     }
-
-    socket.on('updateLocation', async (data) => {
-      const userId = socket.userId;
-      if (!userId || !data.lat || !data.lng) {
-        // Here you could emit an error back to the client
-        return;
-      }
-
-      try {
-        await UserService.updateUserLocation(userId, data.lat, data.lng);
-      } catch (error) {
-        console.error('Error in updateLocation:', error);
-        // Here you could emit an error back to the client
-      }
-    });
 
     socket.on('disconnect', () => {
       const userId = socket.userId;
       if (userId) {
-        console.log(`Socket disconnected: ${socket.id}`);
+        console.log(`❌ Socket disconnected: ${socket.id}`);
         userSocketMap.delete(userId);
       }
     });
@@ -64,10 +44,9 @@ export const initSocket = (server) => {
   return io;
 };
 
+// helper functions
 export const getIO = () => {
-  if (!io) {
-    throw new Error('Socket.io not initialized!');
-  }
+  if (!io) throw new Error('Socket.io not initialized!');
   return io;
 };
 
@@ -76,7 +55,6 @@ export const emitToUser = (userId, event, data) => {
   if (socketId) {
     getIO().to(socketId).emit(event, data);
     return true;
-  } else {
-    return false;
   }
+  return false;
 };

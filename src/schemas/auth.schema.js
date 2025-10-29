@@ -6,7 +6,6 @@ export const signupSchema = Joi.object({
   email: Joi.string().email().required(),
   phonenumber: Joi.string().required(),
   password: Joi.string().min(6).required(),
-  role: Joi.string(),
 });
 
 export const verifyOtpSchema = Joi.object({

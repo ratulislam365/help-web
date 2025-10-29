@@ -1,10 +1,14 @@
-import { Router } from 'express';
-import UserController from '../controllers/user.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
-import validationMiddleware from '../middlewares/validation.middleware.js';
-import { setHelpRadiusSchema, updateLocationSchema } from '../schemas/user.schema.js';
+// src/routes/user.routes.js
+import express from "express";
+import { getUserProfile } from "../controllers/user.controller.js";
+// src/routes/user.routes.js
+import { changeRole } from "../controllers/user.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
 
-export const userRouter = Router();
+const router = express.Router();
 
-userRouter.put('/set-distance', authMiddleware, validationMiddleware(setHelpRadiusSchema), UserController.setHelpRadius);
-userRouter.post('/update-location', authMiddleware, validationMiddleware(updateLocationSchema), UserController.updateUserLocation);
+// Get user profile
+router.get("/:id", getUserProfile);
+router.patch("/change-role", protect, changeRole);
+
+export default router;

@@ -1,31 +1,49 @@
-import UserService from '../services/user.service.js';
+// src/controllers/user.controller.js
+import { findUserById } from "../repositories/user.repository.js";
+import AppError from "../utils/appError.js";
 
-export default class UserController {
-  static async setHelpRadius(req, res, next) {
-    try {
-      const { helpRadius } = req.body;
-      const user = await UserService.setHelpRadius(req.user.id, helpRadius);
-      res.json({
-        success: true,
-        message: 'Help radius updated successfully',
-        data: user,
-      });
-    } catch (err) {
-      next(err);
-    }
+// src/controllers/user.controller.js
+import User from "../models/user.model.js";
+
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await findUserById(userId);
+    if (!user) return next(new AppError("User not found", 404));
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// src/controllers/user.controller.js
+
+export const changeRole = async (req, res) => {
+  const { role } = req.body;
+  const validRoles = ["seeker", "giver", "both"];
+
+  if (!validRoles.includes(role)) {
+    return res.status(400).json({ success: false, message: "Invalid role" });
   }
 
-  static async updateUserLocation(req, res, next) {
-    try {
-      const { lat, lng } = req.body;
-      const user = await UserService.updateUserLocation(req.user.id, lat, lng);
-      res.json({
-        success: true,
-        message: 'Location updated successfully',
-        data: user,
-      });
-    } catch (err) {
-      next(err);
-    }
+  try {
+    req.user.role = role; // JWT দিয়ে আসা current user
+    await req.user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Role updated successfully",
+      data: {
+        _id: req.user._id,
+        role: req.user.role,
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};

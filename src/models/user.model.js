@@ -1,8 +1,10 @@
+ import mongoose from 'mongoose';
+ import bcrypt from 'bcryptjs';
+ import jwt from 'jsonwebtoken';
+ import crypto from 'crypto';
 
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
+
+
 
 const userSchema = new mongoose.Schema({
   fullname: {
@@ -27,34 +29,6 @@ const userSchema = new mongoose.Schema({
     minlength: [6, 'Password must be at least 6 characters long'],
     select: false,
   },
-  role: {
-    type: String,
-    enum: ['seeker', 'giver', 'both'],
-    default: 'seeker',
-  },
-  isAvailable: {
-    type: Boolean,
-    default: false,
-    index: true,
-  },
-  helpRadius: {
-    type: Number,
-    default: 2000, // in meters
-  },
-  fcmToken: {
-    type: String,
-  },
-  location: {
-    type: {
-      type: String,
-      enum: ['Point'],
-      default: 'Point',
-    },
-    coordinates: {
-      type: [Number],
-      default: [0, 0],
-    },
-  },
   isEmailVerified: {
     type: Boolean,
     default: false,
@@ -75,10 +49,30 @@ const userSchema = new mongoose.Schema({
     type: Date,
     select: false,
   },
+
+  // 🆕 Added for Help Seeker Flow
+  role: {
+    type: String,
+    enum: ["seeker", "giver", "both"],
+    default: "seeker",
+  },
+  profileImage: {
+    type: String,
+    default: "https://cdn.app/default-avatar.png",
+  },
+  location: {
+    lat: {
+      type: Number,
+      default: null,
+    },
+    lng: {
+      type: Number,
+      default: null,
+    },
+  },
+
 }, { timestamps: true });
 
-// Create 2dsphere index for location
-userSchema.index({ location: '2dsphere' });
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
@@ -116,4 +110,5 @@ userSchema.methods.generateOtp = function () {
 };
 
 export default mongoose.model('User', userSchema);
+
 
