@@ -6,7 +6,7 @@ import { authRouter } from './routes/auth.routes.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import userRoutes from "./routes/user.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
-
+import helpRequestRoutes from "./routes/helpRequest.routes.js";
 
 
 
@@ -27,7 +27,8 @@ app.use("/api/users", userRoutes); // ✅ Add this line
 //notificationRoutes
 app.use("/api/notifications", notificationRoutes);
 
-
+//help reues
+app.use("/api/help-requests", helpRequestRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

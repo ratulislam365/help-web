@@ -2,6 +2,7 @@
  import bcrypt from 'bcryptjs';
  import jwt from 'jsonwebtoken';
  import crypto from 'crypto';
+ 
 
 
 
@@ -33,24 +34,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  emailVerificationOtp: {
-    type: String,
-    select: false,
-  },
-  emailVerificationOtpExpires: {
-    type: Date,
-    select: false,
-  },
-  passwordResetOtp: {
-    type: String,
-    select: false,
-  },
-  passwordResetOtpExpires: {
-    type: Date,
-    select: false,
-  },
+  emailVerificationOtp: { type: String, select: false },
+  emailVerificationOtpExpires: { type: Date, select: false },
+  passwordResetOtp: { type: String, select: false },
+  passwordResetOtpExpires: { type: Date, select: false },
 
-  // 🆕 Added for Help Seeker Flow
+  // 🆕 Role field for help system
   role: {
     type: String,
     enum: ["seeker", "giver", "both"],
@@ -60,18 +49,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "https://cdn.app/default-avatar.png",
   },
+
+  // 🆕 Updated GeoJSON location field
   location: {
-    lat: {
-      type: Number,
-      default: null,
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
     },
-    lng: {
-      type: Number,
-      default: null,
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: false,
+      default: [0, 0]
     },
   },
 
 }, { timestamps: true });
+
+// 🔍 Create 2dsphere index for GeoSpatial queries
+
+userSchema.index({ location: "2dsphere" });
 
 
 // Hash password before saving

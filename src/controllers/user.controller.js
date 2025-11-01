@@ -1,3 +1,4 @@
+
 // src/controllers/user.controller.js
 import { findUserById } from "../repositories/user.repository.js";
 import AppError from "../utils/appError.js";
