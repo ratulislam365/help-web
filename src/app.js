@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/error.middleware.js';
 import userRoutes from "./routes/user.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import helpRequestRoutes from "./routes/helpRequest.routes.js";
+import historyRoutes from "./routes/history.routes.js";
 
 
 
@@ -32,5 +33,9 @@ app.use("/api/help-requests", helpRequestRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
+
+
+
+app.use("/api/history", historyRoutes);
 
 export default app;
